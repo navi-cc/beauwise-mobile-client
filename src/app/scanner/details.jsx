@@ -53,12 +53,15 @@ import Results from '@/components/scanner/Result';
 import { useBackHandler } from '@react-native-community/hooks';
 import Toast from 'react-native-toast-message';
 import { ingredientAnalysisService } from '@/services/ingredientAnalysisService';
+import Checkbox from 'expo-checkbox';
+import Audit from '@/components/icons/hugeicons/Audit';
+import InfoBadgeSolid from '@/components/icons/hugeicons/InfoBadgeSolid';
+import { storage } from '@/config/mmkv';
 
 const AnimatedTouchableOpacity = createAnimatedComponent(TouchableOpacity);
 
 const formSchema = z.object({
 	name: z.string().min(4, { error: 'This field is required.' }),
-	brand: z.string().optional(),
 	notes: z.string().optional()
 });
 
@@ -115,7 +118,7 @@ export default function ScannerDetails() {
 			if (!data) {
 				throw new Error('Something went wrong.');
 			}
-
+			setModalVisible(false);
 			resetIngredients();
 			queryClient.invalidateQueries({ queryKey: ['analysis_history'] });
 			queryClient.invalidateQueries({ queryKey: ['metrics'] });
@@ -150,9 +153,35 @@ export default function ScannerDetails() {
 	const setIngredients = useScanStore((state) => state.setIngredients);
 	const resetIngredients = useScanStore((state) => state.resetIngredients);
 
+	const disclaimerVerifyVisible = useScanStore((state) => state.disclaimerVerifyVisible);
+	const setDisclaimerVerifyVisible = useScanStore(
+		(state) => state.setDisclaimerVerifyVisible
+	);
+
+	const shouldShowDisclaimerAgain =
+		storage.getBoolean('shouldShowDisclaimerAgain') ?? true;
+
+	const [shouldNotShowDisclaimer, setShouldNotShowDisclaimer] = useState(() =>
+		storage.getBoolean('shouldShowDisclaimerAgain') === undefined
+			? false
+			: shouldShowDisclaimerAgain
+	);
+
 	const searchRef = useRef(null);
 	const brandInputRef = useRef(null);
 	const notesInputRef = useRef(null);
+
+	const handleCheckbox = (value) => {
+		setShouldNotShowDisclaimer(value);
+	};
+
+	const handleCloseDisclaimer = () => {
+		if (shouldNotShowDisclaimer) {
+			storage.set('shouldShowDisclaimerAgain', !shouldNotShowDisclaimer);
+		}
+
+		setDisclaimerVerifyVisible(false);
+	};
 
 	const handleCancel = () => {
 		cancelController.current?.abort();
@@ -210,6 +239,10 @@ export default function ScannerDetails() {
 	}, [inputIngredientVisible]);
 
 	useBackHandler(() => {
+		if (disclaimerVerifyVisible) {
+			setDisclaimerVerifyVisible(false);
+		}
+
 		if (analyze.isPending) {
 			setModalVisible(true);
 			return true;
@@ -725,7 +758,7 @@ export default function ScannerDetails() {
 												color: styles.theme.colors[activeTheme].text
 											}}
 										>
-											Name{' '}
+											Name / Brand{' '}
 											<Text style={{ color: styles.theme.colors.status.red }}>*</Text>
 										</Text>
 										<Controller
@@ -746,7 +779,7 @@ export default function ScannerDetails() {
 														}}
 													>
 														<TextInput
-															onSubmitEditing={() => brandInputRef.current?.focus()}
+															onSubmitEditing={() => notesInputRef.current?.focus()}
 															selectionColor={styles.theme.colors.primary}
 															cursorColor={styles.theme.colors.primary}
 															style={{
@@ -767,69 +800,9 @@ export default function ScannerDetails() {
 															enterKeyHint='next'
 															autoCapitalize='characters'
 															autoFocus={true}
-															placeholder='e.g., Hydrating Sunscreen'
+															placeholder='e.g., Hydrating Sunscreen, BeauWise Naturals'
 														/>
 													</Animated.View>
-												);
-											}}
-										/>
-									</View>
-
-									<View
-										style={{
-											rowGap: styles.spacing.sm,
-											marginTop: styles.spacing.sm,
-											zIndex: -999
-										}}
-									>
-										<Text
-											style={{
-												fontSize: styles.font.size.sm,
-												fontFamily: styles.font.family,
-												color: styles.theme.colors[activeTheme].text
-											}}
-										>
-											Brand{' '}
-											<Text
-												style={{
-													color: styles.theme.colors[activeTheme].text_secondary + '7a'
-												}}
-											>
-												(optional)
-											</Text>
-										</Text>
-
-										<Controller
-											control={control}
-											name='brand'
-											render={({ field: { value, onChange } }) => {
-												return (
-													<TextInput
-														value={value}
-														ref={brandInputRef}
-														onSubmitEditing={() => notesInputRef.current?.focus()}
-														selectionColor={styles.theme.colors.primary}
-														cursorColor={styles.theme.colors.primary}
-														style={{
-															flexGrow: 1,
-															paddingHorizontal: styles.spacing.lg,
-															borderRadius: styles.border.radius.size.sm,
-															backgroundColor:
-																styles.theme.colors[activeTheme].input_background,
-															fontFamily: styles.font.family,
-															fontSize: styles.font.size.sm,
-															color: styles.theme.colors[activeTheme].text
-														}}
-														submitBehavior='submit'
-														placeholderTextColor={
-															styles.theme.colors[activeTheme].text + '9a'
-														}
-														onChangeText={onChange}
-														maxLength={100}
-														enterKeyHint='next'
-														autoCapitalize='characters'
-														placeholder='e.g., BeauWise Naturals'
-													/>
 												);
 											}}
 										/>
@@ -929,6 +902,93 @@ export default function ScannerDetails() {
 			)}
 
 			<Portal>
+				<Modal
+					visible={disclaimerVerifyVisible && shouldShowDisclaimerAgain}
+					dismissable={false}
+					dismissableBackButton={false}
+					contentContainerStyle={{
+						alignItems: 'center'
+					}}
+				>
+					<View
+						style={{
+							margin: styles.spacing.double_xl,
+							padding: 20,
+							backgroundColor: styles.theme.colors[activeTheme].card_background,
+							borderWidth: 1,
+							borderColor: styles.theme.colors[activeTheme].card_border,
+							borderRadius: styles.border.radius.size.sm,
+							alignItems: 'center',
+							rowGap: 20
+						}}
+					>
+						<InfoBadgeSolid color={styles.theme.colors.primary} size={70} />
+						<Text
+							style={{
+								textAlign: 'justify',
+								fontFamily: styles.font.family,
+								color: styles.theme.colors[activeTheme].text
+							}}
+						>
+							Please carefully verify the scanned ingredients against the official
+							packaging to ensure they are accurately listed.
+						</Text>
+						<TouchableOpacity
+							style={{
+								flexDirection: 'row',
+								alignItems: 'center',
+								columnGap: styles.spacing.md
+							}}
+							onPress={() => {
+								handleCheckbox(!shouldNotShowDisclaimer);
+							}}
+							activeOpacity={0.5}
+						>
+							<Checkbox
+								value={shouldNotShowDisclaimer}
+								color={styles.theme.colors.primary}
+								style={{
+									aspectRatio: 1,
+									width: 14,
+									pointerEvents: 'none',
+									borderRadius: 2
+								}}
+							/>
+
+							<View>
+								<Text
+									style={{
+										fontFamily: styles.font.family,
+										fontSize: styles.font.size.sm,
+										color: styles.theme.colors[activeTheme].text
+									}}
+								>
+									Don't show this again
+								</Text>
+							</View>
+						</TouchableOpacity>
+						<TouchableOpacity
+							activeOpacity={0.7}
+							onPress={handleCloseDisclaimer}
+							style={{
+								backgroundColor: styles.theme.colors.primary,
+								paddingVertical: 10,
+								paddingHorizontal: 40,
+								borderRadius: styles.border.radius.size.sm
+							}}
+						>
+							<Text
+								style={{
+									fontFamily: styles.font.family,
+									color: '#fff'
+								}}
+							>
+								Got it!
+							</Text>
+						</TouchableOpacity>
+					</View>
+				</Modal>
+
 				<Modal visible={modalVisible}>
 					<View
 						style={{

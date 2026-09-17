@@ -28,6 +28,7 @@ import { useCallback, useRef } from 'react';
 import { ResumableZoom } from 'react-native-zoom-toolkit';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import Skeleton from '@/components/Skeleton';
+import Album from '@/components/icons/hugeicons/Album';
 const data = [
 	{
 		title: 'Pore Myths & Facts',
@@ -95,8 +96,12 @@ export default function MythFactDetail({ selectedItem, onBack }) {
 	const data = ['initial', ...selectedItem.topics];
 	const parentId = selectedItem.id;
 	const parentName = selectedItem.name;
+	const parentImageSourceName = selectedItem.displayImage?.sourceName ?? 'Gemini';
+	const parentVideoSourceName = selectedItem.videoGuide?.sourceName ?? 'Gemini';
+
 	const parentDescription = selectedItem?.description;
-	const numberOfTopics = selectedItem.topics.length;
+	const numberOfTopics =
+		selectedItem.topics.filter((item) => !item?.is_deleted)?.length ?? 0;
 	const cacheImageTag = selectedItem.displayImage?.fileHash;
 	const cacheVideoTag = selectedItem.videoGuide?.fileHash;
 	const sources = [...selectedItem.sources, 'video'];
@@ -167,29 +172,76 @@ export default function MythFactDetail({ selectedItem, onBack }) {
 							rowGap: styles.spacing.xxl
 						}}
 					>
-						<Text
-							style={{
-								color: styles.theme.colors[activeTheme].text,
-								fontFamily: styles.font.family
-							}}
-						>
-							{selectedItem.name} Video Overview
-						</Text>
+						<View style={{ flexDirection: 'column' }}>
+							<Text
+								style={{
+									width: '280',
+									textAlign: 'center',
+									color: styles.theme.colors[activeTheme].text,
+									fontFamily: styles.font.family
+								}}
+							>
+								{selectedItem.name}
+							</Text>
 
-						<VideoView
-							player={player}
-							allowsPictureInPicture={true}
-							style={{
-								aspectRatio: 16 / 9,
-								width: 300,
-								borderWidth: 1,
-								borderRadius: styles.border.radius.size.sm,
-								borderColor: styles.theme.colors[activeTheme].card_border
-							}}
-						/>
+							<Text
+								style={{
+									width: '280',
+									textAlign: 'center',
+									color: styles.theme.colors[activeTheme].text,
+									fontFamily: styles.font.family
+								}}
+							>
+								Video Overview
+							</Text>
+						</View>
+
+						<View style={{ rowGap: styles.spacing.double_xl }}>
+							<VideoView
+								player={player}
+								allowsPictureInPicture={true}
+								style={{
+									aspectRatio: 16 / 9,
+									width: 300,
+									borderWidth: 1,
+									borderRadius: styles.border.radius.size.sm,
+									borderColor: styles.theme.colors[activeTheme].card_border
+								}}
+							/>
+
+							<View
+								style={{
+									flexDirection: 'row',
+									columnGap: styles.spacing.md,
+									alignItems: 'center',
+									zIndex: -1
+								}}
+							>
+								<Album
+									size={styles.icon.size.xl}
+									color={styles.theme.colors[activeTheme].icon + '9a'}
+								/>
+								<Text
+									style={{
+										paddingRight: 50,
+										fontSize: styles.font.size.sm,
+										fontFamily: styles.font.family,
+										color: styles.theme.colors[activeTheme].text + '9a'
+									}}
+								>
+									Video Source — {parentVideoSourceName}
+								</Text>
+							</View>
+						</View>
+
+						<Source sheetRef={sheetRef} />
 					</View>
 				)}
 				renderItem={({ item, index }) => {
+					if (!!item?.is_deleted) {
+						return null;
+					}
+
 					return (
 						<>
 							<View
@@ -208,6 +260,7 @@ export default function MythFactDetail({ selectedItem, onBack }) {
 										<Initial
 											baseImagePath={selectedItem.baseImagePath}
 											name={parentName}
+											imageSourceName={parentImageSourceName}
 											id={parentId}
 											description={parentDescription}
 											cacheImageTag={cacheImageTag}
@@ -219,6 +272,7 @@ export default function MythFactDetail({ selectedItem, onBack }) {
 											title={item.topic}
 											myth={item.myth}
 											imageId={item.imageId}
+											imageSourceName={item?.sourceName ?? 'Gemini'}
 											cacheImageTag={item?.fileHash}
 											fact={item.fact}
 											id={item.id}
@@ -228,7 +282,7 @@ export default function MythFactDetail({ selectedItem, onBack }) {
 								</View>
 							</View>
 
-							{index === numberOfTopics && <Source sheetRef={sheetRef} />}
+							{/* {index === numberOfTopics && <Source sheetRef={sheetRef} />} */}
 						</>
 					);
 				}}
@@ -368,6 +422,7 @@ function Source({ sheetRef }) {
 
 function Initial({
 	name,
+	imageSourceName,
 	id,
 	description,
 	numberOfTopics,
@@ -448,7 +503,31 @@ function Initial({
 						{description}
 					</Text>
 				)}
-				<View>
+				<View style={{ rowGap: styles.spacing.lg }}>
+					<View
+						style={{
+							flexDirection: 'row',
+							columnGap: styles.spacing.md,
+							alignItems: 'center',
+							zIndex: -1
+						}}
+					>
+						<Album
+							size={styles.icon.size.xl}
+							color={styles.theme.colors[activeTheme].icon + '9a'}
+						/>
+						<Text
+							style={{
+								paddingRight: 50,
+								fontSize: styles.font.size.sm,
+								fontFamily: styles.font.family,
+								color: styles.theme.colors[activeTheme].text + '9a'
+							}}
+						>
+							Image Source — {imageSourceName}
+						</Text>
+					</View>
+
 					<View
 						style={{
 							flexDirection: 'row',

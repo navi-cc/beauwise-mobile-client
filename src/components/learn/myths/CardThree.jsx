@@ -1,3 +1,4 @@
+import Album from '@/components/icons/hugeicons/Album';
 import Skeleton from '@/components/Skeleton';
 import styles from '@/config/styles';
 import { useThemeStore } from '@/stores/useThemeStore';
@@ -13,6 +14,7 @@ export default function CardThree({
 	myth,
 	fact,
 	imageId,
+	imageSourceName,
 	id,
 	cacheImageTag,
 	baseImagePath
@@ -86,6 +88,32 @@ export default function CardThree({
 						/>
 					)}
 				</ResumableZoom>
+
+				<View
+					style={{
+						marginTop: styles.spacing.double_xl,
+						marginLeft: styles.spacing.one_xxl,
+						flexDirection: 'row',
+						columnGap: styles.spacing.md,
+						alignItems: 'center',
+						zIndex: -1
+					}}
+				>
+					<Album
+						size={styles.icon.size.xl}
+						color={styles.theme.colors[activeTheme].icon + '9a'}
+					/>
+					<Text
+						style={{
+							paddingRight: 50,
+							fontSize: styles.font.size.sm,
+							fontFamily: styles.font.family,
+							color: styles.theme.colors[activeTheme].text + '9a'
+						}}
+					>
+						Image Source — {imageSourceName}
+					</Text>
+				</View>
 			</View>
 
 			<Animated.View

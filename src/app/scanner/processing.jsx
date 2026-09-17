@@ -23,6 +23,9 @@ export default function Processing() {
 
 	const imageBase64 = useScanStore((state) => state.imageBase64);
 	const setIngredients = useScanStore((state) => state.setIngredients);
+	const setDisclaimerVerifyVisible = useScanStore(
+		(state) => state.setDisclaimerVerifyVisible
+	);
 
 	const [visible, setVisible] = useState(false);
 
@@ -48,6 +51,7 @@ export default function Processing() {
 		},
 		mutationKey: ['ocr-processing'],
 		onSuccess: ({ data }) => {
+			setDisclaimerVerifyVisible(true);
 			setIngredients([...data]);
 			router.replace('/scanner/details');
 		},

@@ -1,3 +1,4 @@
+import Album from '@/components/icons/hugeicons/Album';
 import Document from '@/components/icons/hugeicons/Document';
 import LinkCirlcle from '@/components/icons/hugeicons/LinkCircle';
 import styles from '@/config/styles';
@@ -114,29 +115,55 @@ export default function CosmeticDetails() {
 					marginTop: '20%'
 				}}
 			>
-				<View
-					style={{
-						padding: 20,
-						borderWidth: 1,
-						borderColor: styles.theme.colors[activeTheme].card_border,
-						backgroundColor: activeTheme === 'light' ? 'transparent' : '#fff',
-						borderRadius: styles.border.radius.size.sm
-					}}
-				>
-					<Image
+				<View style={{ rowGap: styles.spacing.xl }}>
+					<View
 						style={{
-							aspectRatio: 1,
-							width: 100
+							alignItems: 'center',
+							padding: 20,
+							borderWidth: 1,
+							borderColor: styles.theme.colors[activeTheme].card_border,
+							backgroundColor: activeTheme === 'light' ? 'transparent' : '#fff',
+							borderRadius: styles.border.radius.size.sm
 						}}
-						contentFit='contain'
-						transition={{
-							duration: 200,
-							effect: 'cross-dissolve'
+					>
+						<Image
+							style={{
+								aspectRatio: 1,
+								width: 100
+							}}
+							contentFit='contain'
+							transition={{
+								duration: 200,
+								effect: 'cross-dissolve'
+							}}
+							recyclingKey={item.id}
+							cachePolicy='memory-disk'
+							source={`https://cdn.beauwise.tech/learn/cosmetic_guides/${item.imageId}.webp`}
+						/>
+					</View>
+
+					<View
+						style={{
+							flexDirection: 'row',
+							columnGap: styles.spacing.md,
+							alignItems: 'center'
 						}}
-						recyclingKey={item.id}
-						cachePolicy='memory-disk'
-						source={`https://cdn.beauwise.tech/learn/cosmetic_guides/${item.imageId}.webp`}
-					/>
+					>
+						<Album
+							size={styles.icon.size.xl}
+							color={styles.theme.colors[activeTheme].icon + '9a'}
+						/>
+						<Text
+							style={{
+								paddingRight: 50,
+								fontSize: styles.font.size.sm,
+								fontFamily: styles.font.family,
+								color: styles.theme.colors[activeTheme].text + '9a'
+							}}
+						>
+							Image Source — {item?.imageSourceName ?? 'Unsplash'}
+						</Text>
+					</View>
 				</View>
 
 				<View style={{ rowGap: styles.spacing.xs }}>

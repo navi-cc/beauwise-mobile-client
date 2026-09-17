@@ -317,7 +317,9 @@ export default function MythsFacts() {
 								title={item?.name}
 								baseImagePath={item.baseImagePath}
 								cacheImageTag={item?.displayImage?.fileHash}
-								numberOfTopics={item?.topics?.length}
+								numberOfTopics={
+									item?.topics?.filter((item) => !item?.is_deleted)?.length ?? 0
+								}
 							/>
 						)}
 						onEndReached={() => {

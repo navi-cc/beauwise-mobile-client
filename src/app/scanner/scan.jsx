@@ -14,7 +14,8 @@ import Animated, {
 	useAnimatedStyle,
 	withTiming,
 	withDelay,
-	createAnimatedComponent
+	createAnimatedComponent,
+	useAnimatedProps
 } from 'react-native-reanimated';
 import { runOnJS, scheduleOnRN } from 'react-native-worklets';
 import { useDebouncedCallback } from 'use-debounce';
@@ -35,6 +36,7 @@ import ExpoImageCropTool from '@bsky.app/expo-image-crop-tool';
 import { File } from 'expo-file-system';
 
 const AnimatedTouchableOpacity = createAnimatedComponent(TouchableOpacity);
+const CustomCamera = createAnimatedComponent(Camera);
 export default function CameraScreen() {
 	const setImageBase64 = useScanStore((state) => state.setImageBase64);
 	const setImageUri = useScanStore((state) => state.setImageUri);
@@ -58,6 +60,11 @@ export default function CameraScreen() {
 	const appState = useAppState();
 	const isFocus = useIsFocused();
 	const isActive = isFocus && appState === 'active';
+	const zoom = useSharedValue(device?.neutralZoom ?? 1);
+	const startZoom = useSharedValue(1);
+
+	const minZoom = device?.minZoom ?? 1;
+	const maxZoom = Math.min(device?.maxZoom ?? 1, 16);
 	const ringX = useSharedValue(0);
 	const ringY = useSharedValue(0);
 	const ringOpacity = useSharedValue(0);
@@ -188,6 +195,22 @@ export default function CameraScreen() {
 		};
 	});
 
+	const animatedProps = useAnimatedProps(() => ({
+		zoom: zoom.value
+	}));
+
+	const pinchGesture = Gesture.Pinch()
+		.onStart(() => {
+			'worklet';
+			startZoom.value = zoom.value;
+		})
+		.onUpdate((event) => {
+			'worklet';
+			const target = startZoom.value * event.scale;
+			zoom.value = Math.min(Math.max(target, minZoom), maxZoom);
+		});
+
+	const composedGestures = Gesture.Simultaneous(pinchGesture, tapToFocus);
 	if (device == null) return <View style={styles.container} />;
 
 	return (
@@ -307,9 +330,11 @@ export default function CameraScreen() {
 					</View>
 				</View>
 			</View>
-			<GestureDetector gesture={tapToFocus}>
-				<Camera
+			<GestureDetector gesture={composedGestures}>
+				<CustomCamera
 					preview
+					zoom={zoom}
+					animatedProps={animatedProps}
 					photoHdr={true}
 					photoQualityBalance='quality'
 					ref={cameraRef}

@@ -7,6 +7,9 @@ export const useScanStore = create((set) => ({
 	imageUri: null,
 	setImageUri: (value) => set(() => ({ imageUri: value })),
 
+	disclaimerVerifyVisible: false,
+	setDisclaimerVerifyVisible: (value) => set(() => ({ disclaimerVerifyVisible: value })),
+
 	ingredients: [],
 	setIngredients: (newIngredients) => set(() => ({ ingredients: newIngredients })),
 	resetIngredients: () => set(() => ({ ingredients: [] }))

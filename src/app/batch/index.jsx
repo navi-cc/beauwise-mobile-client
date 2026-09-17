@@ -391,6 +391,7 @@ export default function BatchScreen() {
 											<Text
 												key={content}
 												style={{
+													textAlign: 'justify',
 													fontSize: styles.font.size.md,
 													fontFamily: styles.font.family,
 													color: styles.theme.colors[activeTheme].text_secondary

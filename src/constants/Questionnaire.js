@@ -193,7 +193,7 @@ export default [
 				id: randomUUID(),
 				options: [
 					{
-						label: 'Never / Very Rarely',
+						label: 'Sometimes',
 						value: 'never_very_rarely',
 						id: randomUUID(),
 						image: require('assets/images/skin/prefer_not_to_say/never_very_rarely.webp')

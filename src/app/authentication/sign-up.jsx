@@ -31,7 +31,14 @@ import { ChevronLeft } from 'lucide-react-native';
 import { storage } from '@/config/mmkv';
 
 const formSchema = z.object({
-	userName: z.string().min(2, { error: 'Name is required' }),
+	userName: z
+		.string()
+		.trim()
+		.min(2, 'Name is too short')
+		.regex(
+			/^[a-zA-ZÀ-ÿ]+([ '-][a-zA-ZÀ-ÿ]+)+$/,
+			'Please enter a valid first and last name (e.g. John Doe)'
+		),
 	email: z.email({ error: 'Invalid email' }),
 	password: z
 		.string()

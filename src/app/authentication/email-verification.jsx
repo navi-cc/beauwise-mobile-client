@@ -165,14 +165,11 @@ export default function EmailVerification() {
 			setTimeLeft((prev) => {
 				if (prev <= 0) {
 					clearInterval(timer);
-
 					return 0;
 				}
-
 				return prev - 1;
 			});
 		}, 1000);
-
 		return () => clearInterval(timer);
 	}, [isClick]);
 
@@ -218,8 +215,34 @@ export default function EmailVerification() {
 						color: styles.theme.colors[activeTheme].text_secondary
 					}}
 				>
-					We've sent a 6-digit verification code to {userInfo?.email}. Please enter the
-					code below.
+					We've sent a 6-digit verification code to
+					<View style={{ flexDirection: 'row', columnGap: styles.spacing.xs }}>
+						<Text
+							style={{
+								fontSize: styles.font.size.md,
+								textAlign: 'center',
+								fontFamily: styles.font.family,
+								color: styles.theme.colors.primary,
+								fontWeight: styles.font.weight.bold
+							}}
+						>
+							{userInfo?.email}
+							<Text style={{ color: styles.theme.colors[activeTheme].text_secondary }}>
+								.
+							</Text>
+						</Text>
+
+						<Text
+							style={{
+								fontSize: styles.font.size.md,
+								textAlign: 'center',
+								fontFamily: styles.font.family,
+								color: styles.theme.colors[activeTheme].text_secondary
+							}}
+						>
+							Please enter the code below.
+						</Text>
+					</View>
 				</Text>
 			</View>
 

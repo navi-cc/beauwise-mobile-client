@@ -53,6 +53,7 @@ export default function Policy({ handleAgree, activeTheme }) {
 						<View style={{ rowGap: 20 }}>
 							<Text
 								style={{
+									textAlign: 'justify',
 									fontSize: styles.font.size.md,
 									fontFamily: styles.font.family,
 									color: styles.theme.colors[activeTheme].text_secondary,
@@ -84,6 +85,7 @@ export default function Policy({ handleAgree, activeTheme }) {
 										/>
 										<Text
 											style={{
+												textAlign: 'justify',
 												fontSize: styles.font.size.md,
 												fontFamily: styles.font.family,
 												color: styles.theme.colors[activeTheme].text_secondary,

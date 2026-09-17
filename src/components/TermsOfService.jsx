@@ -58,6 +58,7 @@ export default function ToS({ handleClose, handleAgree, activeTheme }) {
 							{item.content.map((content, index) => (
 								<Text
 									style={{
+										textAlign: 'justify',
 										fontSize: styles.font.size.md,
 										fontFamily: styles.font.family,
 										color: styles.theme.colors[activeTheme].text_secondary,

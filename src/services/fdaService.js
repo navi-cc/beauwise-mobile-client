@@ -76,7 +76,8 @@ export async function fdaService(query, clientTimeZone, signal) {
 		);
 
 		const isExpired = isAfter(todayDate, productValidityDate);
-		const formattedProduct = data.PRODUCT_NAME.split(' ')
+		const formattedProduct = data.PRODUCT_NAME.trim()
+			.split(' ')
 			.map((str) => {
 				str = str.toLowerCase();
 

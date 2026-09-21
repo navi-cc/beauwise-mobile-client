@@ -1,0 +1,22 @@
+import * as React from 'react';
+import Svg, { Path } from 'react-native-svg';
+const Album = ({ size = 24, color = 'black' }) => (
+	<Svg
+		xmlns='http://www.w3.org/2000/svg'
+		viewBox='0 0 24 24'
+		color={color}
+		width={size}
+		height={size}
+		fill='none'
+		stroke={color}
+		strokeWidth={1.5}
+		strokeLinecap='round'
+		strokeLinejoin='round'
+	>
+		<Path d='M17.5 5.73v.561m.28-.29h-.53M18 6a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0' />
+		<Path d='M9.5 8c0-2.829 0-4.243.879-5.122C11.257 2 12.672 2 15.5 2s4.243 0 5.121.88c.879.878.879 2.292.879 5.12v4c0 2.829 0 4.243-.879 5.122C19.743 18 18.328 18 15.5 18s-4.243 0-5.121-.88C9.5 16.243 9.5 14.829 9.5 12z' />
+		<Path d='M6.623 5.999c-2.132.582-3.259.979-3.807 1.928-.621 1.076-.255 2.442.477 5.174l1.035 3.864c.732 2.732 1.098 4.098 2.174 4.72 1.077.62 2.443.255 5.175-.477q.722-.194 1.323-.36' />
+		<Path d='m9.5 14 3.37-3.37a2.153 2.153 0 0 1 3.274.271L20.5 17' />
+	</Svg>
+);
+export default Album;

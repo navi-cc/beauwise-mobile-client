@@ -158,13 +158,10 @@ export default function ScannerDetails() {
 		(state) => state.setDisclaimerVerifyVisible
 	);
 
-	const shouldShowDisclaimerAgain =
-		storage.getBoolean('shouldShowDisclaimerAgain') ?? true;
+	const shouldShowDisclaimerAgain = storage.getBoolean('shouldShowDisclaimerAgain');
 
-	const [shouldNotShowDisclaimer, setShouldNotShowDisclaimer] = useState(() =>
-		storage.getBoolean('shouldShowDisclaimerAgain') === undefined
-			? false
-			: shouldShowDisclaimerAgain
+	const [shouldNotShowDisclaimer, setShouldNotShowDisclaimer] = useState(
+		() => shouldShowDisclaimerAgain !== undefined
 	);
 
 	const searchRef = useRef(null);
@@ -903,7 +900,7 @@ export default function ScannerDetails() {
 
 			<Portal>
 				<Modal
-					visible={disclaimerVerifyVisible && shouldShowDisclaimerAgain}
+					visible={disclaimerVerifyVisible && (shouldShowDisclaimerAgain ?? true)}
 					dismissable={false}
 					dismissableBackButton={false}
 					contentContainerStyle={{
